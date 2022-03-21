@@ -1,5 +1,6 @@
 #pragma once
 #include "Connexion.h"
+#include "PathFindingList.h"
 #include <vector>
 
 
@@ -14,7 +15,7 @@ public:
 	Graph(const int nbR, const int nbN, Connexion* tab);
 
 	~Graph();
-	std::vector<Connexion> getFromNode(Node myNode);
+	std::vector<Connexion> getFromNode(NodeRecord myNode);
 	std::vector<Connexion> getTable();
 
 	int getNbR();

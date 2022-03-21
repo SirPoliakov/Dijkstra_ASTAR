@@ -1,12 +1,12 @@
 #include "PathFindingList.h"
 
-void PathFindingList::addRoad(Connexion myRoad)
+void PathFindingList::addRoad(NodeRecord myRoad)
 {
 	roads.push_back(myRoad);
 	length++;
 }
 
-void PathFindingList::addRoads(std::vector<Connexion> myRoads)
+void PathFindingList::addRoads(std::vector<NodeRecord> myRoads)
 {
 	for (int i = 0; i < myRoads.size(); i++)
 	{
@@ -14,49 +14,52 @@ void PathFindingList::addRoads(std::vector<Connexion> myRoads)
 	}
 }
 
-std::vector<Connexion> PathFindingList::getRoads(){ return roads; }
+std::vector<NodeRecord> PathFindingList::getRoads(){ return roads; }
 
 int PathFindingList::getLength() { return length; }
 
-bool PathFindingList::removeRoad(Connexion myRoad)
+bool PathFindingList::removeRoad(NodeRecord myRoad)
 {
-	int indice = find(myRoad);
-	if (indice >= 0) {
-		roads.erase(roads.begin() + indice);
-		length--;
-		return true;
+	for (int i = 0; i < roads.size(); i++)
+	{
+		if (roads[i] == myRoad) {
+			roads.erase(roads.begin() + i);
+			length--;
+			return true;
+		}
 	}
-	else { return false; }
+	return false;
 }
 
-bool PathFindingList::contains(Node myNode)
+bool PathFindingList::contains(NodeRecord myNode)
 {
 	for (int i = 0; i < length; i++)
 	{
-		if ((roads[i].getPrev() == myNode) || (roads[i].getNext() == myNode)) { return true; }
+		if ((roads[i].myConnexion.getPrev() == myNode.myConnexion.getPrev()) || (roads[i].myConnexion.getNext() == myNode.myConnexion.getNext())) { return true; }
 	}
 
 	return false;
 }
 
-int PathFindingList::find(Connexion myRoad)
+NodeRecord PathFindingList::find(NodeRecord myRoad)
 {
 	for (int i = 0; i < length; i++)
 	{
-		if (roads[i] == myRoad) { return i; }
+		if (roads[i] == myRoad) { return roads[i]; }
 	}
 
-	return -1;
+	NodeRecord eratum = NodeRecord();
+	return eratum;
 }
 
-Connexion PathFindingList::smallestElmt()
+NodeRecord PathFindingList::smallestElmt()
 {
-	Connexion min, tmp;
+	NodeRecord min, tmp;
 	min = roads[0];
 	for (int i = 0; i < length; i++)
 	{
 		tmp = roads[i];
-		if (tmp.getCost() < min.getCost())
+		if (tmp.costSoFar < min.costSoFar)
 		{
 			min = tmp;
 		}

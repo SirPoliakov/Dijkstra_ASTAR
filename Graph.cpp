@@ -5,13 +5,13 @@ Graph::Graph(const int nbR, const int nbN, Connexion* tab) : nbRelation(nbR), nb
 
 Graph::~Graph(){}
 
-std::vector<Connexion> Graph::getFromNode(Node myNode)
+std::vector<Connexion> Graph::getFromNode(NodeRecord node)
 {
 	std::vector<Connexion> nodeConnexions;
 
 	for (int i = 0; i < nbRelation; i++)
 	{
-		if (table[i].getPrev() == myNode)
+		if (table[i].getPrev() == node.myNode)
 		{
 			nodeConnexions.push_back(table[i]);
 		}

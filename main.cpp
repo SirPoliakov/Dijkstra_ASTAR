@@ -11,39 +11,106 @@ struct Path
 };
 
 
-Path dijkstra(Graph myGraph, std::string start, std::string end)
+Path dijkstra(Graph myGraph, std::string start, std::string end, std::string goal)
 {
-    Node current = start; 
-    int costSoFar = 0;
 
-    PathFindingList open = PathFindingList(); open.addRoads(myGraph.getTable());
+    //Initialize the record for the start Node
+    NodeRecord startRecord = NodeRecord("start");
+
+    //Initialize the open and closed list
+    PathFindingList open = PathFindingList();
+    open.addRoad(startRecord);
     PathFindingList closed = PathFindingList();
+    NodeRecord current;
 
-    Path result; result.list = start; result.pound = 0;
-    
+    //Iterate through processing each node
     while (open.getLength() > 0)
     {
-        std::vector<Connexion> connexions = myGraph.getFromNode(current); // Chemins possibles depuis le noeud
 
-        Connexion min, tmp;
-        min = connexions[0];
-        for (int i = 0; i < connexions.size(); i++) //chemin le plus cours depuis le noeuds
+        //Find the smallest element in the open list
+        current = open.smallestElmt();
+        
+        //if it is the goal node, then terminate
+        if (current.myNode == goal)  break;
+
+        //Otherwise its outgoing connexion
+        std::vector<Connexion> connexions = myGraph.getFromNode(current);
+
+        NodeRecord endNodeRecord;
+
+        //Loop through each connexion intern
+        for (Connexion connexion : connexions)
         {
-            tmp = connexions[i];
-            if (tmp.getCost() < min.getCost())
+
+            //Get the cost estimate for the end node
+            Node endNode = connexion.getNext();
+            int endNodeCost = current.costSoFar + connexion.getCost();
+
+            //Skip if the node is closed
+            if (closed.contains(endNode)) continue;
+
+            //...Or if it is open and we've found a worse route
+            else if (open.contains(endNode))
             {
-                min = tmp;
+                //Here we find the record in the open list corresponding to the endNode
+                endNodeRecord = open.find(endNode);
+                if (endNodeRecord.costSoFar <= endNodeCost) continue;
             }
+
+            //Otherwise we know we have an unvisited node, so make a record for it
+            else
+            {
+                endNodeRecord = NodeRecord("endNode");
+            }
+
+            // We are here if we need to update the node
+            // Update the cost and connection
+            endNodeRecord.costSoFar = endNodeCost;
+            endNodeRecord.myConnexion = connexion;
+
+            // And add it to the open list
+            if (!open.contains(endNode)) open.addRoad(endNodeRecord);
         }
-        current = min.getPrev(); 
-        
-        if (current == end) break; // Si on est arrivé STOP
 
-
-        
+        // We’ve finished looking at the connections for 
+        // the current node, so add it to the closed list
+        // and remove it from the open list.
+        open.removeRoad(current);
+        closed.addRoad(current);
     }
 
+    // We’re here if we’ve either found the goal, or 
+    // if we have no more nodes to search, find which.
+    if (current.myNode != goal)
+    {
+        //We’ve run out of nodes without finding the goal, so there’s no solution
+        Path NONE;
+        NONE.list = "NONE"; NONE.pound = 0;
+        return NONE;
+    }
+    else
+    {
+        // Compile the list of connections in the path
+        Path path, finalPath;
 
+        // Work back along the path, accumulating connections
+        while (current.myNode != start)
+        {
+            path.list += current.myNode;
+            path.pound += current.costSoFar;
+
+            current = current.myConnexion.getPrev();
+        }
+        
+        // Reverse the path, and return it
+        finalPath.pound = path.pound;
+        for (int i = path.list.size()-1; i>= 0; i--)
+        {
+            finalPath.list += path.list[i];
+        }
+
+        return finalPath;
+    }
 }
 
 using namespace std;
@@ -55,9 +122,9 @@ int main()
 
     //........................................................PREPARATION DU GRAPH.............................................................//
 
-    const int relations = 7; const int noeuds = 5;
+    const int relations = 6; const int noeuds = 5;
 
-    Connexion tab[7];
+    Connexion tab[relations];
 
     for (int i = 0; i < relations ; i++)
     {
@@ -93,6 +160,18 @@ int main()
     {
         cout << "Prev :  " << graphTest.getTable()[i].getPrev() << endl << "Next :  " << graphTest.getTable()[i].getNext() << endl << " Cost :  " << graphTest.getTable()[i].getCost() << endl;
     }
+
+    //......................................................................................................................................//
+    
+    Path result = dijkstra(graphTest, "A", "E", "E");
+    cout << "Voici le chemin le plus cours :  " << endl;
+
+    for (int i = 0; i < result.list.size()-1; i++)
+    {
+        cout << result.list[i] << " ; ";
+    }
+    cout << result.list[result.list.size()] << endl;
+    cout << " poids total :  " << result.pound << endl;
 
     //......................................................................................................................................//
 
