@@ -125,26 +125,8 @@ int main()
     const int relations = 6; const int noeuds = 5;
 
     Connexion tab[relations];
-
-    for (int i = 0; i < relations ; i++)
-    {
-        Node tmpPrevN, tmpNextN;
-        int tmpCost;
-        Connexion tmpConnexion;
-        cout << "Entrez les relation... " << endl;
-        cout << "Premier noeud : " << endl;
-        cin >> tmpPrevN;
-        cout << "Second noeud : " << endl;
-        cin >> tmpNextN;
-        cout << "Cout : " << endl;
-        cin >> tmpCost;
-        tmpConnexion = Connexion(tmpPrevN, tmpNextN, tmpCost);
-
-        tab[i] = tmpConnexion;
-        cout << "Releation suivante!" << endl;
-    }
-
-    cout << "tableau rempli!" << endl;
+    Connexion co1, co2, co3, co4, 
+    
     Graph graphTest = Graph(relations, noeuds, tab);
     cout << "Graph créé!" << endl;
     
