@@ -15,7 +15,7 @@ Path dijkstra(Graph myGraph, std::string start, std::string end, std::string goa
 {
 
     //Initialize the record for the start Node
-    NodeRecord startRecord = NodeRecord("start");
+    NodeRecord startRecord = NodeRecord(myGraph.find(start));
 
     //Initialize the open and closed list
     PathFindingList open = PathFindingList();
@@ -28,7 +28,7 @@ Path dijkstra(Graph myGraph, std::string start, std::string end, std::string goa
     {
 
         //Find the smallest element in the open list
-        current = open.smallestElmt();
+        current = NodeRecord(open.smallestElmt().myConnexion);
         
         //if it is the goal node, then terminate
         if (current.myNode == goal)  break;
@@ -43,7 +43,7 @@ Path dijkstra(Graph myGraph, std::string start, std::string end, std::string goa
         {
 
             //Get the cost estimate for the end node
-            Node endNode = connexion.getNext();
+            NodeRecord endNode = NodeRecord(connexion);
             int endNodeCost = current.costSoFar + connexion.getCost();
 
             //Skip if the node is closed
@@ -60,7 +60,7 @@ Path dijkstra(Graph myGraph, std::string start, std::string end, std::string goa
             //Otherwise we know we have an unvisited node, so make a record for it
             else
             {
-                endNodeRecord = NodeRecord("endNode");
+                endNodeRecord = endNode;
             }
 
             // We are here if we need to update the node
@@ -99,7 +99,7 @@ Path dijkstra(Graph myGraph, std::string start, std::string end, std::string goa
             path.list += current.myNode;
             path.pound += current.costSoFar;
 
-            current = current.myConnexion.getPrev();
+            current = closed.find(current.myConnexion);
         }
         
         // Reverse the path, and return it
@@ -122,12 +122,23 @@ int main()
 
     //........................................................PREPARATION DU GRAPH.............................................................//
 
-    const int relations = 6; const int noeuds = 5;
+    const int nbRelations = 5; const int noeuds = 5;
 
-    Connexion tab[relations];
-    Connexion co1, co2, co3, co4, 
+    vector<Connexion> table;
+    Connexion co1, co2, co3, co4, co5;
+    co1 = Connexion("A", "B", 4);
+    co2 = Connexion("B", "C", 1);
+    co3 = Connexion("C", "D", 3);
+    co4 = Connexion("B", "D", 5);
+    co5 = Connexion("D", "E", 2);
+
+    table.push_back(co1);
+    table.push_back(co2);
+    table.push_back(co3);
+    table.push_back(co4);
+    table.push_back(co5);
     
-    Graph graphTest = Graph(relations, noeuds, tab);
+    Graph graphTest = Graph(nbRelations, noeuds, table);
     cout << "Graph créé!" << endl;
     
     //.......................................................................................................................................//

@@ -1,7 +1,8 @@
 #include "Graph.h"
 
 
-Graph::Graph(const int nbR, const int nbN, Connexion* tab) : nbRelation(nbR), nbNode(nbN) {}
+
+Graph::Graph(const int nbR, const int nbN, std::vector<Connexion>& tab) : nbRelation(nbR), nbNode(nbN), table(tab) {}
 
 Graph::~Graph(){}
 
@@ -21,6 +22,13 @@ std::vector<Connexion> Graph::getFromNode(NodeRecord node)
 
 std::vector<Connexion> Graph::getTable() { return table; }
 
+Connexion Graph::find(Node myNode)
+{
+	for (int i = 0; i < table.size(); i++)
+	{
+		if (myNode == table[i].getPrev()) return table[i];
+	}
+}
 int Graph::getNbR()
 {
 	return nbRelation;

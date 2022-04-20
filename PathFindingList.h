@@ -8,7 +8,7 @@ struct NodeRecord
 	Connexion myConnexion;
 	int costSoFar;
 
-	NodeRecord(std::string mNode) : myNode(mNode), costSoFar(0) {}
+	NodeRecord(Connexion myCo) : myNode(myCo.getPrev()), myConnexion(myCo), costSoFar(0) {}
 	NodeRecord() : myNode(""), costSoFar(0){}
 	bool operator==(NodeRecord other) { return (myNode == other.myNode) && (myConnexion == other.myConnexion) && (costSoFar == other.costSoFar); }
 };
