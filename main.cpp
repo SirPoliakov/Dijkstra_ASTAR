@@ -169,11 +169,11 @@ int main()
     Path result = dijkstra(graphTest, "A", "F");
     cout << "Voici le chemin le plus cours :  " << endl;
 
-    for (int i = 0; i < result.list.size()-1; i++)
+    for (int i = 0; i < static_cast<int>(result.list.size())-1; i++)
     {
         cout << result.list[i] << " ; ";
     }
-    cout << result.list[result.list.size()-1] << endl;
+    cout << result.list[static_cast<int>(result.list.size())-1] << endl;
     cout << " poids total :  " << result.pound << endl;
 
     //......................................................................................................................................//

@@ -8,7 +8,7 @@ void PathFindingList::addRoad(NodeRecord myRoad)
 
 void PathFindingList::addRoads(std::vector<NodeRecord> myRoads)
 {
-	for (int i = 0; i < myRoads.size(); i++)
+	for (int i = 0; i < static_cast<int>(myRoads.size()); i++)
 	{
 		roads.push_back(myRoads[i]);
 	}
@@ -20,7 +20,7 @@ int PathFindingList::getLength() { return length; }
 
 bool PathFindingList::removeRoad(NodeRecord myRoad)
 {
-	for (int i = 0; i < roads.size(); i++)
+	for (int i = 0; i < static_cast<int>(roads.size()); i++)
 	{
 		if (roads[i] == myRoad) {
 			roads.erase(roads.begin() + i);

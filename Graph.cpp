@@ -24,7 +24,7 @@ std::vector<Connexion> Graph::getTable() { return table; }
 
 Connexion Graph::find(Node myNode)
 {
-	for (int i = 0; i < table.size(); i++)
+	for (int i = 0; i < static_cast<int>(table.size()); i++)
 	{
 		if (myNode == table[i].getPrev()) return table[i];
 	}
