@@ -31,21 +31,21 @@ bool PathFindingList::removeRoad(NodeRecord myRoad)
 	return false;
 }
 
-bool PathFindingList::contains(NodeRecord myNode)
+bool PathFindingList::contains(Node myNode)
 {
 	for (int i = 0; i < length; i++)
 	{
-		if ((roads[i].myConnexion.getPrev() == myNode.myConnexion.getPrev()) || (roads[i].myConnexion.getNext() == myNode.myConnexion.getNext())) { return true; }
+		if (roads[i].myNode == myNode) { return true; }
 	}
 
 	return false;
 }
 
-NodeRecord PathFindingList::find(NodeRecord myRoad)
+NodeRecord PathFindingList::find(Node myRoad)
 {
 	for (int i = 0; i < length; i++)
 	{
-		if (roads[i] == myRoad) { return roads[i]; }
+		if (roads[i].myNode == myRoad) { return roads[i]; }
 	}
 
 	NodeRecord eratum = NodeRecord();

@@ -7,11 +7,11 @@
 struct Path
 {
     std::string list;
-    int pound;
+    int pound = 0;
 };
 
 
-Path dijkstra(Graph myGraph, std::string start, std::string end, std::string goal)
+Path dijkstra(Graph myGraph, std::string start, std::string goal)
 {
 
     //Initialize the record for the start Node
@@ -28,7 +28,7 @@ Path dijkstra(Graph myGraph, std::string start, std::string end, std::string goa
     {
 
         //Find the smallest element in the open list
-        current = NodeRecord(open.smallestElmt().myConnexion);
+        current = open.smallestElmt();
         
         //if it is the goal node, then terminate
         if (current.myNode == goal)  break;
@@ -36,14 +36,14 @@ Path dijkstra(Graph myGraph, std::string start, std::string end, std::string goa
         //Otherwise its outgoing connexion
         std::vector<Connexion> connexions = myGraph.getFromNode(current);
 
-        NodeRecord endNodeRecord;
-
+        
         //Loop through each connexion intern
         for (Connexion connexion : connexions)
         {
 
             //Get the cost estimate for the end node
-            NodeRecord endNode = NodeRecord(connexion);
+            Node endNode = connexion.getNext();
+            
             int endNodeCost = current.costSoFar + connexion.getCost();
 
             //Skip if the node is closed
@@ -53,23 +53,24 @@ Path dijkstra(Graph myGraph, std::string start, std::string end, std::string goa
             else if (open.contains(endNode))
             {
                 //Here we find the record in the open list corresponding to the endNode
-                endNodeRecord = open.find(endNode);
+
+                NodeRecord endNodeRecord = open.find(endNode);
                 if (endNodeRecord.costSoFar <= endNodeCost) continue;
+                else {
+                    open.removeRoad(endNodeRecord);
+                    endNodeRecord.myConnexion = connexion;
+                    endNodeRecord.costSoFar = endNodeCost;
+                    open.addRoad(endNodeRecord);
+                }
             }
 
             //Otherwise we know we have an unvisited node, so make a record for it
-            else
-            {
-                endNodeRecord = endNode;
+            else {
+                NodeRecord endNodeRecord = NodeRecord(endNode, connexion, endNodeCost);
+
+                // And add it to the open list
+                if (!open.contains(endNode)) open.addRoad(endNodeRecord);
             }
-
-            // We are here if we need to update the node
-            // Update the cost and connection
-            endNodeRecord.costSoFar = endNodeCost;
-            endNodeRecord.myConnexion = connexion;
-
-            // And add it to the open list
-            if (!open.contains(endNode)) open.addRoad(endNodeRecord);
         }
 
         // We’ve finished looking at the connections for 
@@ -91,24 +92,25 @@ Path dijkstra(Graph myGraph, std::string start, std::string end, std::string goa
     else
     {
         // Compile the list of connections in the path
-        Path path, finalPath;
+        Path path, finalPath; path.pound = 0;
 
         // Work back along the path, accumulating connections
+        path.pound = current.costSoFar;
         while (current.myNode != start)
         {
             path.list += current.myNode;
-            path.pound += current.costSoFar;
-
-            current = closed.find(current.myConnexion);
+            current = closed.find(current.myConnexion.getPrev());
         }
         
-        // Reverse the path, and return it
-        finalPath.pound = path.pound;
-        for (int i = path.list.size()-1; i>= 0; i--)
-        {
-            finalPath.list += path.list[i];
-        }
 
+        // Reverse the path, and return it
+         finalPath.list += start; finalPath.pound = path.pound;
+         int s = static_cast <int>(path.list.size());
+         for (int i = s-1; i>= 0; i--)
+         {
+            finalPath.list += path.list[i];
+         }
+        
         return finalPath;
     }
 }
@@ -122,21 +124,29 @@ int main()
 
     //........................................................PREPARATION DU GRAPH.............................................................//
 
-    const int nbRelations = 5; const int noeuds = 5;
+    const int nbRelations = 9; const int noeuds = 6;
 
     vector<Connexion> table;
-    Connexion co1, co2, co3, co4, co5;
-    co1 = Connexion("A", "B", 4);
-    co2 = Connexion("B", "C", 1);
-    co3 = Connexion("C", "D", 3);
-    co4 = Connexion("B", "D", 5);
-    co5 = Connexion("D", "E", 2);
+    Connexion co1, co2, co3, co4, co5, co6, co7, co8, co9;
+    co1 = Connexion("A", "B", 2);
+    co2 = Connexion("A", "D", 4);
+    co3 = Connexion("B", "C", 3);
+    co4 = Connexion("B", "F", 13);
+    co5 = Connexion("C", "E", 5);
+    co6 = Connexion("D", "C", 3);
+    co7 = Connexion("D", "F", 15);
+    co8 = Connexion("E", "F", 3);
+    co9 = Connexion("E", "B", 3);
 
     table.push_back(co1);
     table.push_back(co2);
     table.push_back(co3);
     table.push_back(co4);
     table.push_back(co5);
+    table.push_back(co6);
+    table.push_back(co7);
+    table.push_back(co8);
+    table.push_back(co9);
     
     Graph graphTest = Graph(nbRelations, noeuds, table);
     cout << "Graph créé!" << endl;
@@ -156,14 +166,14 @@ int main()
 
     //......................................................................................................................................//
     
-    Path result = dijkstra(graphTest, "A", "E", "E");
+    Path result = dijkstra(graphTest, "A", "F");
     cout << "Voici le chemin le plus cours :  " << endl;
 
     for (int i = 0; i < result.list.size()-1; i++)
     {
         cout << result.list[i] << " ; ";
     }
-    cout << result.list[result.list.size()] << endl;
+    cout << result.list[result.list.size()-1] << endl;
     cout << " poids total :  " << result.pound << endl;
 
     //......................................................................................................................................//
